@@ -1,0 +1,3 @@
+package mutuca.core.strategy.production
+
+class DefaultProductionBehavior

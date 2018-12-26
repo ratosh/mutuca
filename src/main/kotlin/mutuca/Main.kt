@@ -5,7 +5,11 @@ import com.github.ocraft.s2client.protocol.game.BattlenetMap
 import com.github.ocraft.s2client.protocol.game.Difficulty
 import com.github.ocraft.s2client.protocol.game.Race
 
+/**
+ * Main function
+ */
 fun main(args: Array<String>) {
+    // TODO: Change coordinator setup to ladder if we receive args
     println("Starting bot")
     val bot = Mutuca()
     val s2Coordinator = S2Coordinator.setup()
