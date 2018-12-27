@@ -1,8 +1,7 @@
 package mutuca
 
 import com.github.ocraft.s2client.bot.S2Agent
-import com.github.ocraft.s2client.protocol.debug.Color
-import mutuca.core.GameInfo
+import mutuca.core.info.GameInfo
 import mutuca.core.strategy.IGameStrategy
 import mutuca.core.strategy.factory.StrategyFactory
 
@@ -17,13 +16,11 @@ class Mutuca : S2Agent() {
      * Starting AI
      */
     override fun onGameStart() {
-        debug().debugTextOut("Starting Mutuca!", Color.BLUE)
         GameInfo.observation = observation()
         GameInfo.actions = actions()
+        GameInfo.debug = debug()
 
         gameStrategy = StrategyFactory.getStrategy()
-
-        debug().sendDebug()
     }
 
     /**

@@ -4,13 +4,13 @@ import com.github.ocraft.s2client.protocol.data.UnitType
 import com.github.ocraft.s2client.protocol.data.Units
 import com.github.ocraft.s2client.protocol.unit.Alliance
 import com.github.ocraft.s2client.protocol.unit.Unit
-import mutuca.core.GameInfo
+import mutuca.core.info.GameInfo
 import mutuca.core.strategy.resource.DefaultGatherBehavior
 import mutuca.core.unit.MiningBehavior
 import mutuca.core.unit.MorphingBehavior
 import mutuca.core.unit.UnitBehaviour
-import mutuca.core.unit.controller.DefaultPriorityController
-import mutuca.core.unit.controller.UnitPriorityHolder
+import mutuca.core.strategy.priority.DefaultPriorityController
+import mutuca.core.strategy.priority.UnitPriorityHolder
 
 /**
  * Default game strategy.
@@ -26,6 +26,7 @@ class DefaultGameStrategy : IGameStrategy {
     }
 
     override fun step() {
+        GameInfo.reset()
         gatherBehavior.step()
         UnitPriorityHolder.controller.step()
         for (unitInPool in GameInfo.observation.units) {

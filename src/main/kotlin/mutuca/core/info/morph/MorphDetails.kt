@@ -8,5 +8,6 @@ data class MorphDetails(
     val toUnitType: UnitType,
     val ability: Ability,
     val minerals: Int,
-    val gas: Int
+    val gas: Int,
+    val needFood: Boolean
 )

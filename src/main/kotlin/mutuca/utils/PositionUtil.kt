@@ -5,7 +5,7 @@ import com.github.ocraft.s2client.protocol.data.UnitType
 import com.github.ocraft.s2client.protocol.spatial.Point2d
 import com.github.ocraft.s2client.protocol.unit.Alliance
 import com.github.ocraft.s2client.protocol.unit.Unit
-import mutuca.core.GameInfo
+import mutuca.core.info.GameInfo
 import java.util.Optional
 
 object PositionUtil {
@@ -27,5 +27,12 @@ object PositionUtil {
             }
             Optional.ofNullable(target)
         }
+    }
+
+    /**
+     * TODO: Implement a function that returns the best position to place a building in creep
+     */
+    fun findInCreepBuildingPosition(unitType: UnitType, builder: Unit): Point2d? {
+        return null
     }
 }

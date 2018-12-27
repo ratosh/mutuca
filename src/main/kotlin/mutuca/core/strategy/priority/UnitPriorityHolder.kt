@@ -1,7 +1,7 @@
-package mutuca.core.unit.controller
+package mutuca.core.strategy.priority
 
 /**
- * Able to change controller to have different controllers during a game.
+ * Able to change priority to have different controllers during a game.
  */
 object UnitPriorityHolder {
 

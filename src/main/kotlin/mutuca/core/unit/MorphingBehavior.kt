@@ -1,10 +1,11 @@
 package mutuca.core.unit
 
 import com.github.ocraft.s2client.protocol.unit.Unit
-import mutuca.core.GameInfo
-import mutuca.core.info.MorphInfo
+import mutuca.core.info.GameInfo
 import mutuca.core.info.morph.MorphDetails
-import mutuca.core.unit.controller.UnitPriorityHolder
+import mutuca.core.info.morph.MorphData
+import mutuca.core.info.unit.UnitInfo
+import mutuca.core.strategy.priority.UnitPriorityHolder
 
 class MorphingBehavior : IUnitBehavior {
 
@@ -15,12 +16,12 @@ class MorphingBehavior : IUnitBehavior {
      * Morph behavior
      */
     override fun step(unit: Unit): Boolean {
-        if (!unit.orders.isEmpty()) {
+        if (!unit.orders.isEmpty() || GameInfo.resourceChanged) {
             return false
         }
         var bestPriority = 0.0
         var bestMorph: MorphDetails? = null
-        for (morphDetails in MorphInfo.morphingFromTypes[unit.type]!!) {
+        for (morphDetails in MorphData.morphingFromTypes[unit.type]!!) {
             val unitPriority = UnitPriorityHolder.controller.getUnitPriority(morphDetails.toUnitType)
             if (unitPriority > bestPriority &&
                 GameInfo.observation.minerals >= morphDetails.minerals &&
@@ -33,10 +34,11 @@ class MorphingBehavior : IUnitBehavior {
         if (bestMorph == null) {
             return false
         }
-        UnitPriorityHolder.controller.registerMorph(bestMorph)
-        println("Morphing ${unit.type} from ${bestMorph.toUnitType} into ${bestMorph.toUnitType}")
-        GameInfo.actions.unitCommand(unit, bestMorph.ability, false)
-        return true
+        if (UnitInfo.registerMorph(unit, bestMorph)) {
+            GameInfo.actions.unitCommand(unit, bestMorph.ability, false)
+            return true
+        }
+        return false
     }
 
 }
