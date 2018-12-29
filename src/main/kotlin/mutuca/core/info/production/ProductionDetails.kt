@@ -1,13 +1,15 @@
-package mutuca.core.info.morph
+package mutuca.core.info.production
 
 import com.github.ocraft.s2client.protocol.data.Ability
 import com.github.ocraft.s2client.protocol.data.UnitType
 
-data class MorphDetails(
+data class ProductionDetails(
     val fromUnitType: UnitType,
     val toUnitType: UnitType,
     val ability: Ability,
     val minerals: Int,
     val gas: Int,
-    val needFood: Boolean
+    val foodRequired: Float,
+    val produces: Int,
+    val priority: Int
 )

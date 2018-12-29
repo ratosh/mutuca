@@ -5,7 +5,7 @@ package mutuca.core.strategy.priority
  */
 object UnitPriorityHolder {
 
-    private lateinit var unitPriorityController: IUnitPriorityController
+    private lateinit var unitPriorityController: IUnitProductionController
 
     var controller
         get() = unitPriorityController

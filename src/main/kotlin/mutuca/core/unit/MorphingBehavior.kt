@@ -1,11 +1,9 @@
 package mutuca.core.unit
 
 import com.github.ocraft.s2client.protocol.unit.Unit
-import mutuca.core.info.GameInfo
-import mutuca.core.info.morph.MorphDetails
-import mutuca.core.info.morph.MorphData
+import mutuca.core.info.production.ProductionDetails
+import mutuca.core.info.production.morph.MorphInfo
 import mutuca.core.info.unit.UnitInfo
-import mutuca.core.strategy.priority.UnitPriorityHolder
 
 class MorphingBehavior : IUnitBehavior {
 
@@ -16,29 +14,28 @@ class MorphingBehavior : IUnitBehavior {
      * Morph behavior
      */
     override fun step(unit: Unit): Boolean {
-        if (!unit.orders.isEmpty() || GameInfo.resourceChanged) {
+        if (!unit.orders.isEmpty()) {
             return false
         }
-        var bestPriority = 0.0
-        var bestMorph: MorphDetails? = null
-        for (morphDetails in MorphData.morphingFromTypes[unit.type]!!) {
-            val unitPriority = UnitPriorityHolder.controller.getUnitPriority(morphDetails.toUnitType)
-            if (unitPriority > bestPriority &&
-                GameInfo.observation.minerals >= morphDetails.minerals &&
-                GameInfo.observation.vespene >= morphDetails.gas
+        var bestMorph: ProductionDetails? = null
+        var priority = 0
+
+        for (morphDetails in MorphInfo.morphingFromTypes[unit.type]!!) {
+            if (UnitInfo.needProduction(morphDetails.toUnitType) &&
+                UnitInfo.canProduce(unit, morphDetails) &&
+                morphDetails.priority > priority
             ) {
                 bestMorph = morphDetails
-                bestPriority = unitPriority
+                priority = morphDetails.priority
             }
         }
         if (bestMorph == null) {
             return false
         }
-        if (UnitInfo.registerMorph(unit, bestMorph)) {
-            GameInfo.actions.unitCommand(unit, bestMorph.ability, false)
-            return true
-        }
-        return false
+        val unitCount = UnitInfo.getUnitCountIncludingProduction(bestMorph.toUnitType)
+        val wantedCount = UnitInfo.getUnitCountWanted(bestMorph.toUnitType)
+        println("We need $wantedCount and we have $unitCount")
+        return UnitInfo.startProduction(unit, bestMorph)
     }
 
 }
