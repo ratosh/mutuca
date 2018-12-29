@@ -9,6 +9,7 @@ class LingRushBook : OpeningBook(
         OpeningOrder(14, Units.ZERG_OVERLORD, 2),
         OpeningOrder(16, Units.ZERG_SPAWNING_POOL, 1),
         OpeningOrder(16, Units.ZERG_OVERLORD, 3),
+        OpeningOrder(16, Units.ZERG_QUEEN, 1),
         OpeningOrder(16, Units.ZERG_ZERGLING, 10)
     )
 )

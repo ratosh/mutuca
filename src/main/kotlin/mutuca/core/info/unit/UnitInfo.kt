@@ -1,6 +1,7 @@
 package mutuca.core.info.unit
 
 import com.github.ocraft.s2client.bot.S2Agent
+import com.github.ocraft.s2client.bot.gateway.UnitInPool
 import com.github.ocraft.s2client.protocol.data.UnitType
 import com.github.ocraft.s2client.protocol.data.Units
 import com.github.ocraft.s2client.protocol.spatial.Point2d
@@ -11,7 +12,8 @@ import mutuca.core.info.production.ProductionDetails
 import mutuca.core.info.production.morph.MorphInfo
 
 object UnitInfo {
-    private val aliveUnits = mutableSetOf<Long>()
+    val aliveUnits = mutableSetOf<Long>()
+    val missingUnits = mutableSetOf<Long>()
 
     /**
      * Produced unitType count
@@ -46,6 +48,16 @@ object UnitInfo {
         get() = getUnitCountIncludingProduction(Units.ZERG_OVERLORD) * 8 +
             getUnitCountIncludingProduction(Units.ZERG_HATCHERY) * 6
 
+    val playerUnits: List<UnitInPool>
+        get() = GameInfo.observation.units.filter {
+            it.isAlive && it.unit.isPresent && it.unit.get().alliance == Alliance.SELF
+        }
+    
+    val enemyUnits: List<UnitInPool>
+        get() = GameInfo.observation.units.filter {
+            it.isAlive && it.unit.isPresent && it.unit.get().alliance == Alliance.ENEMY
+        }
+
     fun setup(agent: S2Agent) {
 
     }
@@ -63,7 +75,7 @@ object UnitInfo {
         producedUnitCountMap.clear()
         producingUnitCountMap.clear()
         pendingUnitCountMap.clear()
-        val missingUnits = mutableSetOf<Long>()
+        missingUnits.clear()
         missingUnits.addAll(aliveUnits)
 
         for (unit in myUnits) {
@@ -84,6 +96,7 @@ object UnitInfo {
         for (missingUnit in missingUnits) {
             producingUnitMap.remove(missingUnit)
             pendingUnitMap.remove(missingUnit)
+            aliveUnits.remove(missingUnit)
         }
 
         for (unitType in producingUnitMap.values) {

@@ -3,7 +3,7 @@ package mutuca.core.unittype
 import com.github.ocraft.s2client.protocol.unit.Unit
 import mutuca.core.unit.IUnitBehavior
 
-class UnitTypeBehaviour {
+class UnitTypeBehavior {
 
     val unitBehaviorList = mutableListOf<IUnitBehavior>()
 

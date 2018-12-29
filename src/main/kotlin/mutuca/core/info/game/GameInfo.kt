@@ -5,6 +5,7 @@ import com.github.ocraft.s2client.bot.gateway.ActionInterface
 import com.github.ocraft.s2client.bot.gateway.DebugInterface
 import com.github.ocraft.s2client.bot.gateway.ObservationInterface
 import com.github.ocraft.s2client.bot.gateway.QueryInterface
+import com.github.ocraft.s2client.protocol.spatial.Point2d
 import mutuca.core.info.player.EnemyInfo
 import mutuca.core.info.player.PlayerInfo
 import mutuca.core.info.production.building.BuildingInfo
