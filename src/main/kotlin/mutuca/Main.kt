@@ -13,6 +13,7 @@ fun main(args: Array<String>) {
     val bot = Mutuca()
     val s2Coordinator = S2Coordinator.setup()
         .loadSettings(args)
+        .setRealtime(false)
         .setParticipants(
             S2Coordinator.createParticipant(Race.ZERG, bot),
             S2Coordinator.createComputer(Race.ZERG, Difficulty.EASY)

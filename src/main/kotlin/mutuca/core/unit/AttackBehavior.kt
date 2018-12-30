@@ -43,10 +43,12 @@ class AttackBehavior : IUnitBehavior {
             unit.orders[0].targetedUnitTag.isPresent &&
             unit.orders[0].targetedUnitTag.get() == targetUnit.tag
         ) {
+            println("Unit $unit already attacking $targetUnit " + GameInfo.observation.gameLoop)
             return true
         }
 
-        //GameInfo.actions.unitCommand(unit, Abilities.ATTACK, targetUnit.unit(), false)
-        return false
+        println("Unit $unit attacking $targetUnit " + GameInfo.observation.gameLoop)
+        GameInfo.actions.unitCommand(unit, Abilities.ATTACK, targetUnit.unit(), false)
+        return true
     }
 }
