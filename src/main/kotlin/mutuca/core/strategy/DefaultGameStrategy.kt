@@ -2,7 +2,6 @@ package mutuca.core.strategy
 
 import com.github.ocraft.s2client.protocol.data.UnitType
 import com.github.ocraft.s2client.protocol.data.Units
-import com.github.ocraft.s2client.protocol.unit.Alliance
 import com.github.ocraft.s2client.protocol.unit.Unit
 import mutuca.Mutuca
 import mutuca.core.info.unit.UnitInfo
@@ -33,7 +32,7 @@ class DefaultGameStrategy(gameInfo: Mutuca) : IGameStrategy {
 
     override fun step() {
         UnitPriorityHolder.controller.step()
-        for (unitInPool in UnitInfo.playerUnits) {
+        for (unitInPool in UnitInfo.playerUnitList) {
             val unit = unitInPool.unit.get()
             if (!unitTypeBehaviorMap.containsKey(unit.type)) {
                 println("New unitType type unitType ${unit.type.unitTypeId}")

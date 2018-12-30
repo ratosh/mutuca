@@ -6,14 +6,16 @@ import com.github.ocraft.s2client.protocol.data.UnitType
 import com.github.ocraft.s2client.protocol.data.Units
 import com.github.ocraft.s2client.protocol.spatial.Point2d
 import com.github.ocraft.s2client.protocol.unit.Alliance
+import com.github.ocraft.s2client.protocol.unit.Tag
 import com.github.ocraft.s2client.protocol.unit.Unit
 import mutuca.core.info.game.GameInfo
 import mutuca.core.info.production.ProductionDetails
 import mutuca.core.info.production.morph.MorphInfo
+import mutuca.utils.UnitUtil
 
 object UnitInfo {
-    val aliveUnits = mutableSetOf<Long>()
-    val missingUnits = mutableSetOf<Long>()
+    private val aliveUnits = mutableSetOf<Tag>()
+    private val missingUnits = mutableSetOf<Tag>()
 
     /**
      * Produced unitType count
@@ -24,12 +26,12 @@ object UnitInfo {
      * Producing unitType information
      */
     private val producingUnitCountMap = mutableMapOf<UnitType, Int>()
-    private val producingUnitMap = mutableMapOf<Long, UnitType>()
+    private val producingUnitMap = mutableMapOf<Tag, UnitType>()
 
     /**
      * About to start producing unitType information
      */
-    private val pendingUnitMap = mutableMapOf<Long, UnitType>()
+    private val pendingUnitMap = mutableMapOf<Tag, ProductionDetails>()
     private val pendingUnitCountMap = mutableMapOf<UnitType, Int>()
 
     /**
@@ -48,12 +50,19 @@ object UnitInfo {
         get() = getUnitCountIncludingProduction(Units.ZERG_OVERLORD) * 8 +
             getUnitCountIncludingProduction(Units.ZERG_HATCHERY) * 6
 
-    val playerUnits: List<UnitInPool>
+    val playerUnitList: List<UnitInPool>
         get() = GameInfo.observation.units.filter {
             it.isAlive && it.unit.isPresent && it.unit.get().alliance == Alliance.SELF
         }
-    
-    val enemyUnits: List<UnitInPool>
+
+    val playerBaseList: List<UnitInPool>
+        get() = GameInfo.observation.units.filter {
+            it.unit.isPresent &&
+                it.unit.get().alliance == Alliance.SELF &&
+                UnitUtil.isBase(it.unit())
+        }
+
+    val enemyUnitList: List<UnitInPool>
         get() = GameInfo.observation.units.filter {
             it.isAlive && it.unit.isPresent && it.unit.get().alliance == Alliance.ENEMY
         }
@@ -79,7 +88,7 @@ object UnitInfo {
         missingUnits.addAll(aliveUnits)
 
         for (unit in myUnits) {
-            val tagValue = unit.tag.value
+            val tagValue = unit.tag
             incrementProducedCount(unit.unit.get().type)
             if (!aliveUnits.contains(tagValue)) {
                 aliveUnits.add(tagValue)
@@ -88,6 +97,11 @@ object UnitInfo {
                 val ability = unit.unit().orders.first().ability
                 val productionDetails = MorphInfo.morphingAbilities[ability]!!
                 incrementProducingCount(productionDetails.toUnitType, productionDetails.produces)
+            } else if (pendingUnitMap.containsKey(tagValue)) {
+                if (unit.unit().orders.find { it.ability == pendingUnitMap[tagValue]!!.ability } == null) {
+                    println("Remove pending")
+                    pendingUnitMap.remove(tagValue)
+                }
             }
             missingUnits.remove(tagValue)
         }
@@ -103,8 +117,8 @@ object UnitInfo {
             incrementProducingCount(unitType, 1)
         }
 
-        for (unitType in pendingUnitMap.values) {
-            incrementPendingUnitCount(unitType, 1)
+        for (entry in pendingUnitMap) {
+            incrementPendingUnitCount(entry.value.toUnitType, entry.value.produces)
         }
     }
 
@@ -120,7 +134,7 @@ object UnitInfo {
      * Unit does not move to start producing
      */
     fun startProduction(unit: Unit, productionDetails: ProductionDetails): Boolean {
-        val tag = unit.tag.value
+        val tag = unit.tag
         val unitType = productionDetails.toUnitType
         println("Producing ${unit.type} from ${productionDetails.fromUnitType} into $unitType")
         producingUnitMap[tag] = unitType
@@ -133,9 +147,9 @@ object UnitInfo {
      * Unit needs to move to start producing
      */
     fun reserveProduction(unit: Unit, productionDetails: ProductionDetails, location: Point2d?): Boolean {
-        val tag = unit.tag.value
+        val tag = unit.tag
         val unitType = productionDetails.toUnitType
-        pendingUnitMap[tag] = unitType
+        pendingUnitMap[tag] = productionDetails
         println("Producing ${unit.type} from ${productionDetails.fromUnitType} into $unitType")
 
         incrementPendingUnitCount(unitType, productionDetails.produces)
@@ -143,8 +157,8 @@ object UnitInfo {
         return true
     }
 
-    fun reservedProduction(unit: Unit): Boolean {
-        return pendingUnitMap.containsKey(unit.tag.value)
+    fun pendingProducing(unit: Unit): Boolean {
+        return pendingUnitMap.containsKey(unit.tag)
     }
 
     private fun incrementPendingUnitCount(unitType: UnitType, amount: Int) {
@@ -170,16 +184,21 @@ object UnitInfo {
         getUnitCountWanted(unitType) > getUnitCountIncludingPending(unitType)
 
     fun setWantedCount(unitType: UnitType, amount: Int) {
-        wantedUnitCountMap[unitType] = amount
+        if (!wantedUnitCountMap.containsKey(unitType) ||
+            getUnitCountWanted(unitType) != amount
+        ) {
+            println("Setting $unitType wanted count to $amount")
+            wantedUnitCountMap[unitType] = amount
+        }
     }
 
     fun incrementWantedCount(unitType: UnitType, amount: Int) {
-        wantedUnitCountMap[unitType] = getUnitCountWanted(unitType) + amount
+        setWantedCount(unitType, getUnitCountWanted(unitType) + amount)
     }
 
     fun canProduce(unit: Unit, productionDetails: ProductionDetails): Boolean {
         return GameInfo.query.getAbilitiesForUnit(unit, false).abilities.find {
-            it.ability.abilityId == productionDetails.ability.abilityId
+            it.ability == productionDetails.ability
         } != null
     }
 }

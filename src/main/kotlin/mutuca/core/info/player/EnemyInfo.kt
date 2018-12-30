@@ -1,7 +1,6 @@
 package mutuca.core.info.player
 
 import com.github.ocraft.s2client.bot.S2Agent
-import com.github.ocraft.s2client.bot.gateway.UnitInPool
 import com.github.ocraft.s2client.protocol.game.PlayerInfo
 import com.github.ocraft.s2client.protocol.game.Race
 

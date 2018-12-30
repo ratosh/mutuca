@@ -14,9 +14,6 @@ class TrainingBehavior : IUnitBehavior {
      * Training behavior
      */
     override fun step(unit: Unit): Boolean {
-        if (!unit.orders.isEmpty()) {
-            return false
-        }
         var bestTraining: ProductionDetails? = null
         var priority = 0
         for (buildingDetails in TrainingInfo.trainingFromTypes[unit.type]!!) {
@@ -28,10 +25,11 @@ class TrainingBehavior : IUnitBehavior {
                 priority = buildingDetails.priority
             }
         }
-        if (bestTraining == null) {
+        if (bestTraining == null ||
+            unit.orders.find { it.ability == bestTraining.ability } != null
+        ) {
             return false
         }
-
-        return UnitInfo.startProduction(unit, bestTraining)
+        return UnitInfo.reserveProduction(unit, bestTraining, null)
     }
 }

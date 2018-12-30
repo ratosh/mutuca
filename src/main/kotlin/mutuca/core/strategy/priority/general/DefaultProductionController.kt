@@ -23,7 +23,9 @@ class DefaultProductionController : IUnitProductionController {
         ) {
             UnitInfo.incrementWantedCount(Units.ZERG_OVERLORD, 1)
         }
-        if (UnitInfo.getUnitCountIncludingProduction(Units.ZERG_ZERGLING) < 75) {
+        if (UnitInfo.getUnitCountIncludingProduction(Units.ZERG_ZERGLING) >=
+            UnitInfo.getUnitCountWanted(Units.ZERG_ZERGLING)
+        ) {
             UnitInfo.incrementWantedCount(Units.ZERG_ZERGLING, UnitInfo.getUnitCount(Units.ZERG_LARVA))
         }
     }

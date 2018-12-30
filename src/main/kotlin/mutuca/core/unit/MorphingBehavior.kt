@@ -32,9 +32,6 @@ class MorphingBehavior : IUnitBehavior {
         if (bestMorph == null) {
             return false
         }
-        val unitCount = UnitInfo.getUnitCountIncludingProduction(bestMorph.toUnitType)
-        val wantedCount = UnitInfo.getUnitCountWanted(bestMorph.toUnitType)
-        println("We need $wantedCount and we have $unitCount")
         return UnitInfo.startProduction(unit, bestMorph)
     }
 

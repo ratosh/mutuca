@@ -16,7 +16,7 @@ class BuilderBehavior : IUnitBehavior {
      * Morph behavior
      */
     override fun step(unit: Unit): Boolean {
-        if (UnitInfo.reservedProduction(unit)) {
+        if (UnitInfo.pendingProducing(unit)) {
             return true
         }
         if (unit.cargoSpaceTaken.isPresent) {

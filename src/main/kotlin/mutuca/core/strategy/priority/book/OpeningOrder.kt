@@ -10,11 +10,11 @@ data class OpeningOrder(
     val wantedCount: Int
 ) {
     fun beginCondition(): Boolean {
-        return UnitInfo.getUnitCountIncludingProduction(Units.ZERG_DRONE) >= drones
+        return UnitInfo.getUnitCountIncludingPending(Units.ZERG_DRONE) >= drones
     }
 
     fun successCondition(): Boolean {
-        return UnitInfo.getUnitCountIncludingProduction(unitType) >= wantedCount
+        return UnitInfo.getUnitCountIncludingPending(unitType) >= wantedCount
     }
 
 }

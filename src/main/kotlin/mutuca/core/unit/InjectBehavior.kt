@@ -1,16 +1,12 @@
 package mutuca.core.unit
 
+import com.github.ocraft.s2client.bot.gateway.UnitInPool
 import com.github.ocraft.s2client.protocol.data.Abilities
-import com.github.ocraft.s2client.protocol.data.Units
 import com.github.ocraft.s2client.protocol.unit.Unit
 import mutuca.core.info.game.GameInfo
+import mutuca.core.info.queen.QueenInfo
 
 class InjectBehavior : IUnitBehavior {
-
-    /**
-     * QueenId, base
-     */
-    private val queenBases = mutableMapOf<Long, Long>()
 
     override val priority: Int
         get() = 1
@@ -27,23 +23,19 @@ class InjectBehavior : IUnitBehavior {
             return false
         }
 
-        val queenTag = unit.tag.value
-        var injectBase: Unit? = null
-        if (queenBases.containsKey(queenTag)) {
-            injectBase = GameInfo.observation.units.find { it.tag.value == queenBases[queenTag] }?.unit()
-            if (injectBase == null) {
-                queenBases.remove(queenTag)
-            }
-        } else {
-            val baseList = GameInfo.observation.units.filter {
-                it.unit().type == Units.ZERG_HATCHERY
-            }
+        var injectBase: UnitInPool? = QueenInfo.getQueenBase(unit)
+        if (injectBase == null) {
+            val baseList = QueenInfo.getFreeBases()
+            var smallestDistance = Float.MAX_VALUE
             for (base in baseList) {
-                val baseTag = base.unit().tag.value
-                if (!queenBases.containsValue(baseTag)) {
-                    injectBase = base.unit()
-                    queenBases[queenTag] = baseTag
+                val distance = GameInfo.query.pathingDistance(unit, base.unit().position.toPoint2d())
+                if (distance < smallestDistance) {
+                    smallestDistance = distance
+                    injectBase = base
                 }
+            }
+            if (injectBase != null) {
+                QueenInfo.registerQueenBase(unit, injectBase.unit())
             }
         }
 
@@ -51,7 +43,7 @@ class InjectBehavior : IUnitBehavior {
             return false
         }
 
-        GameInfo.actions.unitCommand(unit, Abilities.EFFECT_INJECT_LARVA, injectBase, false)
+        GameInfo.actions.unitCommand(unit, Abilities.EFFECT_INJECT_LARVA, injectBase.unit(), false)
         return true
     }
 }

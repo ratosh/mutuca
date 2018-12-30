@@ -10,18 +10,18 @@ class BookController(
     private val nextController: IUnitProductionController
 ) : IUnitProductionController {
     override fun step() {
-        if (openingBook.completed()) {
+        val currentOrder = openingBook.currentOrder()
+        if (currentOrder == null) {
             println("Book completed")
             UnitPriorityHolder.controller = nextController
             return
         }
-        val openingOrder = openingBook.currentOrder() ?: return
-        UnitInfo.setWantedCount(Units.ZERG_DRONE, openingOrder.drones)
-        if (openingOrder.beginCondition() &&
-            UnitInfo.getUnitCountWanted(openingOrder.unitType) != openingOrder.wantedCount
+        UnitInfo.setWantedCount(Units.ZERG_DRONE, currentOrder.drones)
+        if (currentOrder.beginCondition() &&
+            UnitInfo.getUnitCountWanted(currentOrder.unitType) != currentOrder.wantedCount
         ) {
-            println("Setting to produce ${openingOrder.wantedCount} ${openingOrder.unitType}")
-            UnitInfo.setWantedCount(openingOrder.unitType, openingOrder.wantedCount)
+            println("Setting to produce ${currentOrder.wantedCount} ${currentOrder.unitType}")
+            UnitInfo.setWantedCount(currentOrder.unitType, currentOrder.wantedCount)
         }
     }
 }
