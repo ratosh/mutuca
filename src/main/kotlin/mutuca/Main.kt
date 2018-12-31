@@ -12,9 +12,8 @@ fun main(args: Array<String>) {
     // TODO: Change coordinator setup to ladder if we receive args
     val bot = Mutuca()
     val s2Coordinator = S2Coordinator.setup()
-            .setRealtime(true)
+        .setRealtime(true)
         .loadSettings(args)
-        .setRealtime(false)
         .setParticipants(
             S2Coordinator.createParticipant(Race.ZERG, bot),
             S2Coordinator.createComputer(Race.ZERG, Difficulty.EASY)
