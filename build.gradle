@@ -32,7 +32,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"
 
     // Starcraft API
-    compile group: 'com.github.ocraft', name: 'ocraft-s2client-bot', version: '0.2.9'
+    compile group: 'com.github.ocraft', name: 'ocraft-s2client-bot', version: '0.2.10'
 
     // Logger
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
