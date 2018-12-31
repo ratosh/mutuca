@@ -46,7 +46,7 @@ class AttackBehavior : IUnitBehavior {
             return true
         }
 
-        //GameInfo.actions.unitCommand(unit, Abilities.ATTACK, targetUnit.unit(), false)
-        return false
+        GameInfo.actions.unitCommand(unit, Abilities.ATTACK, targetUnit.unit(), false)
+        return true
     }
 }
